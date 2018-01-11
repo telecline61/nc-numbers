@@ -23,6 +23,18 @@ class PartNumbersPlugin {
 		add_action( 'admin_init', array( $this, 'page_id_options_init' ) );
         // add stylesheet
         add_action('wp_enqueue_scripts', array($this,'enqueue'));
+        //add parts number field to shortcode sort option
+        add_filter('woocommerce_shortcode_products_query', array( $this, 'add_parts_number_to_shortcode' ), 10, 2);
+
+    }
+    // shortcode parts number sort option
+    function add_parts_number_to_shortcode ($args, $atts) {
+        if ($atts['orderby'] == "parts-number") {
+            $args['orderby']  = 'meta_value_num';
+            $args['meta_key'] = '_parts_number';
+        }
+        return $args;
+        return $atts;
     }
     // add metabox
     public function add_box() {
@@ -39,7 +51,7 @@ class PartNumbersPlugin {
     public function meta_box_function($post) {
         // Add an nonce field so we can check for it later.
         wp_nonce_field('parts_number_check', 'parts_number_check_value');
-        $myValue = get_post_meta($post -> ID, '_parts_number', true);
+        $parts_number = get_post_meta(get_the_ID(), '_parts_number', true);
         //metabox template
         include( plugin_dir_path( __FILE__ ) . 'templates/metaboxes.php');
     }
@@ -79,15 +91,16 @@ class PartNumbersPlugin {
         $page_ids_options = get_option( 'page_id_option_name' ); // Array of all options
         $page_ids_0 = $page_ids_options['page_ids_0']; //comma separated string of our page ids
         // convert to int. array
-        $myString = $page_ids_0;
-        $myArray = explode(',', $myString);
+        $the_pages = $page_ids_0;
+        $page_array = explode(',', $the_pages);
         //if pages are in the array display the parts numbers
-        if (is_page($myArray)) {
+        if (is_page($page_array)) {
     	global $post;
     	$part_number = get_post_meta($post->ID, '_parts_number', true);
             //only display if not empty
             if($part_number){
-                echo'<span class="part-no">'.$part_number.'</span>';
+                echo'
+                <div class="part-no-wrap"><span class="part-no">'.$part_number.'</span><br /><span>on diagram</span></div>';
             }
         }
     }

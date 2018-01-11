@@ -5,6 +5,6 @@
         <p>The number you enter here will correspond to the number on the parts diagram.</p>
         <p><i>Note:</i> This field will be empty for any product that is not represented on the parts diagram(s).</p>
     </label>
-    <input type="text" id="" class="" name="parts_number" value="<?php echo $myValue; ?>" placeholder="" style="margin:0;height: 28px;">
+    <input type="text" id="" class="" name="parts_number" value="<?php echo $parts_number; ?>" placeholder="" style="margin:0;height: 28px;">
     </p>
 </div>
