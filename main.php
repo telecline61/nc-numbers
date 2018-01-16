@@ -1,8 +1,8 @@
 <?php
 /**
  * Plugin Name: Parts List Numbers
- * Description: Adds custom metabox and field to products for tying parts to parts diagram. Also adds option page for setting IDs of pages that will display the numbers.
- * Version: 0.1
+ * Description: Adds custom metabox and fields to products for tying parts to parts diagram. Also adds option page for setting IDs of pages that will display the numbers.
+ * Version: 1.0
  * Author: Chris Cline
  * Author URI: http://www.christiancline.com
  */
@@ -21,19 +21,17 @@ class PartNumbersPlugin {
         // add options Page
         add_action( 'admin_menu', array( $this, 'add_page_id_options' ) );
 		add_action( 'admin_init', array( $this, 'page_id_options_init' ) );
-
         // add stylesheet - if needed
         //add_action('wp_enqueue_scripts', array($this,'enqueue'));
-
         //add parts number field to shortcode sort option
         add_filter('woocommerce_shortcode_products_query', array( $this, 'add_parts_number_to_shortcode' ), 10, 2);
     }
     // shortcode parts number sort option
     function add_parts_number_to_shortcode ($args, $atts) {
-        //if is part for diagram 1 - MAKE SWITCH CASE
+        //Get orderby atta and order by field value
         switch($atts['orderby']) {
         //change parts number to diagram and test
-        case 'parts-number' :
+        case 'parts-number-1' :
             $args['orderby']  = 'meta_value_num';
             $args['meta_key'] = '_parts_number';
 
@@ -162,11 +160,11 @@ class PartNumbersPlugin {
         $part_number5 = get_post_meta($post->ID, '_parts_number_5', true);
         $part_number6 = get_post_meta($post->ID, '_parts_number_6', true);
 
-            //only display if not empty
+                //display the numbers on products
                 echo'
                 <div class="part-no-wrap">
                 <ul class="part-no">
-                <li class="diagram diagram-1">'.$part_number .'</li>
+                <li class="diagram diagram-1">'. $part_number .'</li>
                     <li class="diagram diagram-2">'. $part_number2 .'</li>
                     <li class="diagram diagram-3">'. $part_number3 .'</li>
                     <li class="diagram diagram-4">'. $part_number4 .'</li>
@@ -247,5 +245,5 @@ class PartNumbersPlugin {
        wp_enqueue_style('part-numbers', plugins_url('css/part-numbers.css', __FILE__), NULL, '1.0');
     }
 }
-// Let's do this thing!
+// Instantiate things!
 $partNumPlug = new  PartNumbersPlugin();
