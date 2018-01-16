@@ -12,36 +12,59 @@ if (!defined('ABSPATH')) exit;
 
 class PartNumbersPlugin {
     public function __construct() {
-        //add metabox and save data
+        //add metabox and
         add_action('add_meta_boxes', array($this, 'add_box'));
+        //save data from fields
         add_action('save_post', array($this, 'save'));
         //display parts number before title
         add_action('woocommerce_before_shop_loop_item_title', array($this, 'display_number'));
         // add options Page
         add_action( 'admin_menu', array( $this, 'add_page_id_options' ) );
 		add_action( 'admin_init', array( $this, 'page_id_options_init' ) );
-        // add stylesheet
-        add_action('wp_enqueue_scripts', array($this,'enqueue'));
+
+        // add stylesheet - if needed
+        //add_action('wp_enqueue_scripts', array($this,'enqueue'));
+
         //add parts number field to shortcode sort option
         add_filter('woocommerce_shortcode_products_query', array( $this, 'add_parts_number_to_shortcode' ), 10, 2);
     }
     // shortcode parts number sort option
     function add_parts_number_to_shortcode ($args, $atts) {
-        //if is part for diagram 1
-        if ($atts['orderby'] == "parts-number") {
+        //if is part for diagram 1 - MAKE SWITCH CASE
+        switch($atts['orderby']) {
+        //change parts number to diagram and test
+        case 'parts-number' :
             $args['orderby']  = 'meta_value_num';
             $args['meta_key'] = '_parts_number';
-        }
-        //if is part for diagram 2
-        if ($atts['orderby'] == "parts-number-2") {
+
+            break;
+        case 'parts-number-2' :
             $args['orderby']  = 'meta_value_num';
             $args['meta_key'] = '_parts_number_2';
-        }
-        //if is part for diagram 3
-        if ($atts['orderby'] == "parts-number-3") {
+
+            break;
+        case 'parts-number-3' :
             $args['orderby']  = 'meta_value_num';
             $args['meta_key'] = '_parts_number_3';
+
+            break;
+        case 'parts-number-4' :
+            $args['orderby']  = 'meta_value_num';
+            $args['meta_key'] = '_parts_number_4';
+
+            break;
+        case 'parts-number-5' :
+            $args['orderby']  = 'meta_value_num';
+            $args['meta_key'] = '_parts_number_5';
+
+            break;
+        case 'parts-number-6' :
+            $args['orderby']  = 'meta_value_num';
+            $args['meta_key'] = '_parts_number_6';
+
+            break;
         }
+
         return $args;
         return $atts;
     }
@@ -60,9 +83,15 @@ class PartNumbersPlugin {
     public function meta_box_function($post) {
         // Add an nonce field so we can check for it later.
         wp_nonce_field('parts_number_check', 'parts_number_check_value');
+
         $parts_number = get_post_meta($post->ID, '_parts_number', true);
         $parts_number2 = get_post_meta($post->ID, '_parts_number_2', true);
         $parts_number3 = get_post_meta($post->ID, '_parts_number_3', true);
+
+        $parts_number4 = get_post_meta($post->ID, '_parts_number_4', true);
+        $parts_number5 = get_post_meta($post->ID, '_parts_number_5', true);
+        $parts_number6 = get_post_meta($post->ID, '_parts_number_6', true);
+
         //metabox template
         include( plugin_dir_path( __FILE__ ) . 'templates/metaboxes.php');
     }
@@ -96,10 +125,19 @@ class PartNumbersPlugin {
         $data2 = sanitize_text_field($_POST['parts_number_2']);
         $data3 = sanitize_text_field($_POST['parts_number_3']);
 
+        $data4 = sanitize_text_field($_POST['parts_number_4']);
+        $data5 = sanitize_text_field($_POST['parts_number_5']);
+        $data6 = sanitize_text_field($_POST['parts_number_6']);
+
         // Update the meta field.
         update_post_meta($post_id, '_parts_number', $data);
         update_post_meta($post_id, '_parts_number_2', $data2);
         update_post_meta($post_id, '_parts_number_3', $data3);
+
+        // Update the meta field.
+        update_post_meta($post_id, '_parts_number_4', $data4);
+        update_post_meta($post_id, '_parts_number_5', $data5);
+        update_post_meta($post_id, '_parts_number_6', $data6);
     }
     //display the number in the product loop
     public function display_number(){
@@ -110,24 +148,31 @@ class PartNumbersPlugin {
         // convert to int. array
         $the_pages = $page_ids_0;
         $page_array = explode(',', $the_pages);
+
         //if pages are in the array display the parts numbers
         if (is_page($page_array)) {
 
     	global $post;
+        //the field values
     	$part_number = get_post_meta($post->ID, '_parts_number', true);
         $part_number2 = get_post_meta($post->ID, '_parts_number_2', true);
         $part_number3 = get_post_meta($post->ID, '_parts_number_3', true);
 
+        $part_number4 = get_post_meta($post->ID, '_parts_number_4', true);
+        $part_number5 = get_post_meta($post->ID, '_parts_number_5', true);
+        $part_number6 = get_post_meta($post->ID, '_parts_number_6', true);
+
             //only display if not empty
-            if($part_number || $part_number2 || $part_number3 ){
                 echo'
                 <div class="part-no-wrap">
-                <ul class="part-no">'.
-                    '<li class="diagram-1">'. $part_number .'</li>
-                    <li class="diagram-2">'. $part_number2 .'</li>
-                    <li class="diagram-3">'. $part_number3 .'</li>
+                <ul class="part-no">
+                <li class="diagram diagram-1">'.$part_number .'</li>
+                    <li class="diagram diagram-2">'. $part_number2 .'</li>
+                    <li class="diagram diagram-3">'. $part_number3 .'</li>
+                    <li class="diagram diagram-4">'. $part_number4 .'</li>
+                    <li class="diagram diagram-5">'. $part_number5 .'</li>
+                    <li class="diagram diagram-6">'. $part_number6 .'</li>
                  </ul><span>on diagram</span></div>';
-            }
         }
     }
     // build our options page
@@ -197,11 +242,10 @@ class PartNumbersPlugin {
 			isset( $this->page_ids_options['page_ids_0'] ) ? esc_attr( $this->page_ids_options['page_ids_0']) : ''
 		);
 	}
-    // enqueue function for nc numbers css - if needed
-   public function enqueue() {
-
+    //enqueue function for nc numbers css - if needed
+    public function enqueue() {
        wp_enqueue_style('part-numbers', plugins_url('css/part-numbers.css', __FILE__), NULL, '1.0');
-   }
+    }
 }
 // Let's do this thing!
 $partNumPlug = new  PartNumbersPlugin();
