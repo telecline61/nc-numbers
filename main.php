@@ -152,7 +152,7 @@ class NcNumbersPlugin {
                 $output = '';
          		$the_query->the_post();
 
-         	   return $output . '<span class="' . $myClass . '">' . get_post_meta( get_the_ID(), '_nc_number', true ) . '</span>';
+         	   return $output .= '<span class="' . $myClass . '">' . get_post_meta( get_the_ID(), '_nc_number', true ) . '</span>';
          	}
 
          	/* Restore original Post Data */
